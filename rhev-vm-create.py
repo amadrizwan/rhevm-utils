@@ -59,6 +59,7 @@ p.add_option("--sdsize", dest="sdsize", help="SD size", metavar="sdsize", defaul
 p.add_option("--osver", dest="osver", help="OS version", metavar="osver", default="rhel_6x64")
 p.add_option("--vmgest", dest="vmgest", help="Management network to use", metavar="vmgest", default="rhevm")
 p.add_option("--vmserv", dest="vmserv", help="Service Network to use", metavar="vmserv", default="rhevm")
+p.add_option("--sdomain", dest="sdomain", help="Explicitly define storage domain", metavar="sdomain", default="disk_storage")
 
 (options, args) = p.parse_args()
 
@@ -84,7 +85,7 @@ if __name__ == "__main__":
                          template=api.templates.get(name="Blank"), type_="server")
     vmdisk = params.Disk(size=1024 * 1024 * 1024 * int(options.sdsize), wipe_after_delete=True, sparse=True,
                          interface="virtio", type_="System", format="cow", storage_domains=params.StorageDomains(
-                             storage_domain=[api.storagedomains.get(name="data_domain")]))
+                             storage_domain=[api.storagedomains.get(name=options.sdomain)]))
     vmnet = params.NIC()
 
     network_gest = params.Network(name=options.vmgest)
