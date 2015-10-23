@@ -18,7 +18,7 @@
 import sys
 import time
 import getpass
-import keyring
+#import keyring
 
 from ovirtsdk.xml import params
 from ovirtsdk.api import API
