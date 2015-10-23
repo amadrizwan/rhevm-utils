@@ -57,9 +57,10 @@ p.add_option("--vmmem", dest="vmmem", help="VM RAM in GB", metavar="vmmem", defa
 p.add_option("--sdtype", dest="sdtype", help="SD type", metavar="sdtype", default="Default")
 p.add_option("--sdsize", dest="sdsize", help="SD size", metavar="sdsize", default="20")
 p.add_option("--osver", dest="osver", help="OS version", metavar="osver", default="rhel_6x64")
-p.add_option("--vmgest", dest="vmgest", help="Management network to use", metavar="vmgest", default="rhevm")
+#p.add_option("--vmgest", dest="vmgest", help="Management network to use", metavar="vmgest", default="rhevm")
 p.add_option("--vmserv", dest="vmserv", help="Service Network to use", metavar="vmserv", default="rhevm")
 p.add_option("--sdomain", dest="sdomain", help="Explicitly define storage domain", metavar="sdomain", default="disk_storage")
+p.add_option("--delprotect", dest="delprotect", help="VM Delete Protection True or False", metavar="sdomain", default="True")
 
 (options, args) = p.parse_args()
 
@@ -106,7 +107,7 @@ if __name__ == "__main__":
     if options.verbosity > 1:
         print("Attaching networks and boot order...")
     vm = api.vms.get(name=options.name)
-    vm.nics.add(nic_gest)
+ #   vm.nics.add(nic_gest)
     vm.nics.add(nic_serv)
 
     # Setting VM to boot always from network, then from HD
@@ -130,8 +131,19 @@ if __name__ == "__main__":
     if options.verbosity > 1:
         print("VM creation successful")
 
+# Change string to boolean for delprotect option
+  def str_to_bool(s):
+    if s == 'True':
+         return True
+    elif s == 'False':
+         return False
+    else:
+         raise Delete protection ValueError # evil ValueError that doesn't tell you what the wrong value was
+
+#Change additional VM attributes         
     vm = api.vms.get(name=options.name)
-    vm.memory_policy.guaranteed = 1 * 1024 * 1024
-    vm.high_availability.enabled = True
+    vm.memory_policy.guaranteed = 1024 * 1024 * 1024 * int(options.vmmem)
+    vm.high_availability.enabled = False
+    vm.delete_protected = str_to_bool(options.delprotect)
     vm.update()
     print('MAC:%s' % vm.nics.get(name="eth0").mac.get_address())
